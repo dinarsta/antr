@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('pasiens', function (Blueprint $table) {
             $table->id();
-            $table->integer('nomor_antrian')->unique();
+            $table->string('nomor_antrian')->unique();
             $table->string('nama');
             $table->enum('jenis_obat', ['jadi', 'racikan']);
             $table->timestamp('waktu_pemanggilan')->nullable();

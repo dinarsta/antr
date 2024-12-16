@@ -13,7 +13,7 @@ class PasienSeeder extends Seeder
     public function run(): void
     {
         $data = [
-            ['nomor_antrian' => 1, 'nama' => 'John Doe', 'jenis_obat' => 'jadi'],
+            ['nomor_antrian' => 1, 'nama' => 'sukonto legowo', 'jenis_obat' => 'jadi'],
             ['nomor_antrian' => 2, 'nama' => 'Jane Smith', 'jenis_obat' => 'racikan'],
             ['nomor_antrian' => 3, 'nama' => 'Alice Brown', 'jenis_obat' => 'jadi'],
             ['nomor_antrian' => 4, 'nama' => 'Bob Johnson', 'jenis_obat' => 'racikan'],
