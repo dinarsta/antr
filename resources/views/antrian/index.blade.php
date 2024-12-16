@@ -18,7 +18,7 @@
                 <tr>
                     <th>Nomor Antrian</th>
                     <th>Nama Pasien</th>
-                    {{-- <th>Jenis Obat</th> --}}
+                    <th>Jenis Obat</th>
                     <th>Waktu Pemanggilan</th>
                 </tr>
             </thead>
@@ -27,7 +27,7 @@
                     <tr data-id="{{ $pasien->id }}">
                         <td>{{ $pasien->nomor_antrian }}</td>
                         <td>{{ $pasien->nama }}</td>
-                        {{-- <td>{{ ucfirst($pasien->jenis_obat) }}</td> --}}
+                        <td>{{ ucfirst($pasien->jenis_obat) }}</td>
                         <td>
                             @if($pasien->waktu_pemanggilan)
                                 {{ $pasien->waktu_pemanggilan->format('H:i:s') }}
