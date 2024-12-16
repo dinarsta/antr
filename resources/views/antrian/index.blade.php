@@ -18,7 +18,7 @@
                 <tr>
                     <th>Nomor Antrian</th>
                     <th>Nama Pasien</th>
-                    <th>Jenis Obat</th>
+                    {{-- <th>Jenis Obat</th> --}}
                     <th>Waktu Pemanggilan</th>
                 </tr>
             </thead>
@@ -27,7 +27,7 @@
                     <tr data-id="{{ $pasien->id }}">
                         <td>{{ $pasien->nomor_antrian }}</td>
                         <td>{{ $pasien->nama }}</td>
-                        <td>{{ ucfirst($pasien->jenis_obat) }}</td>
+                        {{-- <td>{{ ucfirst($pasien->jenis_obat) }}</td> --}}
                         <td>
                             @if($pasien->waktu_pemanggilan)
                                 {{ $pasien->waktu_pemanggilan->format('H:i:s') }}
@@ -72,7 +72,7 @@
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
                 }
             });
 
@@ -91,7 +91,8 @@
                 document.getElementById('current-nomor-antrian').textContent = data.pasien.nomor_antrian;
                 document.getElementById('current-nama').textContent = data.pasien.nama;
 
-                const message = `Memanggil nomor antrian ${data.pasien.nomor_antrian} - ${data.pasien.nama} (${data.pasien.jenis_obat})`;
+                // Remove reference to "jenis_obat" field here, if it exists
+                const message = `Memanggil nomor antrian ${data.pasien.nomor_antrian} - ${data.pasien.nama}`;
                 document.getElementById('status-message').textContent = message;
 
                 speak(message);
@@ -142,4 +143,5 @@
         document.getElementById('status-message').textContent = "Pemanggilan pasien dihentikan.";
     }
 </script>
+
 @endsection
