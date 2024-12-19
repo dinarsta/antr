@@ -18,6 +18,7 @@ class AntrianController extends Controller
         return view('antrian.index', compact('antrian'));
     }
 
+
     /**
      * Memanggil pasien berikutnya dalam antrian.
      */
@@ -28,16 +29,16 @@ class AntrianController extends Controller
      {
          // Ambil pasien pertama yang belum dipanggil dan memiliki jenis obat 'racikan'
          $pasien = Pasien::whereNull('waktu_pemanggilan')
-                         ->where('jenis_obat', 'racikan') // Prioritaskan pasien dengan jenis obat racikan
-                         ->orderBy('nomor_antrian')
-                         ->first();
+                          ->where('jenis_obat', 'racikan')
+                          ->orderBy('nomor_antrian')
+                          ->first();
 
          // Jika tidak ada pasien dengan jenis obat 'racikan', ambil pasien dengan jenis obat lainnya
          if (!$pasien) {
              $pasien = Pasien::whereNull('waktu_pemanggilan')
-                             ->where('jenis_obat', '!=', 'racikan') // Ambil pasien selain racikan
-                             ->orderBy('nomor_antrian')
-                             ->first();
+                              ->where('jenis_obat', '!=', 'racikan')
+                              ->orderBy('nomor_antrian')
+                              ->first();
          }
 
          if ($pasien) {
@@ -45,7 +46,6 @@ class AntrianController extends Controller
              $pasien->waktu_pemanggilan = now();
              $pasien->save();
 
-             // Kirim data pasien yang baru dipanggil ke frontend
              return response()->json([
                  'success' => true,
                  'pasien' => [
@@ -53,7 +53,7 @@ class AntrianController extends Controller
                      'nomor_antrian' => $pasien->nomor_antrian,
                      'nama' => $pasien->nama,
                      'jenis_obat' => $pasien->jenis_obat,
-                     'waktu_pemanggilan' => $pasien->waktu_pemanggilan->format('H:i:s'), // Kirim waktu pemanggilan ke frontend
+                     'waktu_pemanggilan' => $pasien->waktu_pemanggilan->format('H:i:s'),
                  ],
              ]);
          }
@@ -65,32 +65,33 @@ class AntrianController extends Controller
      }
 
 
-    public function panggil(Request $request)
-{
-    // Ambil pasien pertama yang belum dipanggil
-    $pasien = Pasien::whereNull('waktu_pemanggilan')->orderBy('nomor_antrian')->first();
 
-    if ($pasien) {
-        // Tandai pasien sebagai dipanggil
-        $pasien->waktu_pemanggilan = now();
-        $pasien->save();
+     public function panggil(Request $request)
+     {
+         // Ambil pasien pertama yang belum dipanggil
+         $pasien = Pasien::whereNull('waktu_pemanggilan')->orderBy('nomor_antrian')->first();
 
-        return response()->json([
-            'success' => true,
-            'pasien' => [
-                'id' => $pasien->id,
-                'nomor_antrian' => $pasien->nomor_antrian,
-                'nama' => $pasien->nama,
-                'jenis_obat' => $pasien->jenis_obat,
-            ],
-        ]);
-    }
+         if ($pasien) {
+             // Tandai pasien sebagai dipanggil
+             $pasien->waktu_pemanggilan = now();
+             $pasien->save();
 
-    return response()->json([
-        'success' => false,
-        'message' => 'Tidak ada pasien dalam antrian.',
-    ]);
-}
+             return response()->json([
+                 'success' => true,
+                 'pasien' => [
+                     'id' => $pasien->id,
+                     'nomor_antrian' => $pasien->nomor_antrian,
+                     'nama' => $pasien->nama,
+                     'jenis_obat' => $pasien->jenis_obat,
+                 ],
+             ]);
+         }
+
+         return response()->json([
+             'success' => false,
+             'message' => 'Tidak ada pasien dalam antrian.',
+         ]);
+     }
 
     /**
      * Membuat data pasien dummy menggunakan seeder.

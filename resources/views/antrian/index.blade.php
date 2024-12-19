@@ -13,34 +13,24 @@
 
     <!-- Tabel untuk antrian pasien -->
     <div class="table-responsive">
-        <table class="table table-striped table-bordered text-center align-middle">
-            <thead class="table-primary">
+        <table class="table table-bordered table-striped">
+            <thead class="table-light">
                 <tr>
                     <th>Nomor Antrian</th>
-                    <th>Nama Pasien</th>
+                    <th>Nama</th>
                     <th>Jenis Obat</th>
                     <th>Waktu Pemanggilan</th>
                 </tr>
             </thead>
             <tbody id="queue-body">
-                @forelse ($antrian as $pasien)
+                @foreach ($antrian as $pasien)
                     <tr data-id="{{ $pasien->id }}">
                         <td>{{ $pasien->nomor_antrian }}</td>
                         <td>{{ $pasien->nama }}</td>
-                        <td>{{ ucfirst($pasien->jenis_obat) }}</td>
-                        <td>
-                            @if($pasien->waktu_pemanggilan)
-                                {{ $pasien->waktu_pemanggilan->format('H:i:s') }}
-                            @else
-                                <span class="text-muted">Belum dipanggil</span>
-                            @endif
-                        </td>
+                        <td>{{ $pasien->jenis_obat }}</td>
+                        <td>{{ $pasien->waktu_pemanggilan ? $pasien->waktu_pemanggilan->format('H:i:s') : 'Belum dipanggil' }}</td>
                     </tr>
-                @empty
-                    <tr>
-                        <td colspan="4" class="text-center text-muted">Tidak ada pasien dalam antrian</td>
-                    </tr>
-                @endforelse
+                @endforeach
             </tbody>
         </table>
     </div>
@@ -53,16 +43,16 @@
     <!-- Buttons -->
     <div class="text-center mt-3">
         <button id="startButton" class="btn btn-success btn-lg me-2" onclick="startCalling()" title="Mulai Panggil">
-            <i class="fa-solid fa-volume-high"></i>
+            <i class="fa-solid fa-volume-high"></i> Mulai Panggil
         </button>
         <button id="stopButton" class="btn btn-danger btn-lg ms-2" onclick="stopCalling()" title="Berhenti Panggil" disabled>
-            <i class="fa-solid fa-volume-xmark"></i>
+            <i class="fa-solid fa-volume-xmark"></i> Berhenti Panggil
         </button>
     </div>
 </div>
 
 <script>
-    let lastCalledId = null; // Keep track of the last called patient
+    let lastCalledId = null; // Track the last called patient
     let callingInterval = null; // Store the interval for polling
 
     // Function to fetch the next patient
@@ -91,7 +81,6 @@
                 document.getElementById('current-nomor-antrian').textContent = data.pasien.nomor_antrian;
                 document.getElementById('current-nama').textContent = data.pasien.nama;
 
-                // Remove reference to "jenis_obat" field here, if it exists
                 const message = `Memanggil nomor antrian ${data.pasien.nomor_antrian} - ${data.pasien.nama}`;
                 document.getElementById('status-message').textContent = message;
 

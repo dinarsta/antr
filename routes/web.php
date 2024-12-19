@@ -16,9 +16,8 @@ use App\Http\Controllers\AntrianController;
 
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('antrian.index');
 });
-
 
 
 Route::post('/antrian/panggil', [AntrianController::class, 'panggilBerikutnya'])->name('antrian.panggil');
@@ -33,3 +32,7 @@ Route::get('/antrian/next', [AntrianController::class, 'panggilBerikutnya'])->na
 
 Route::post('/antrian/panggil', [AntrianController::class, 'panggil'])->name('antrian.panggil');
 
+Route::get('/', [AntrianController::class, 'index']); // Route to view the queue
+Route::post('/panggil-berikutnya', [AntrianController::class, 'panggilBerikutnya']); // Route to call the next patient
+Route::post('/panggil', [AntrianController::class, 'panggil']); // Route to call a patient from the queue
+Route::post('/seed-dummy-data', [AntrianController::class, 'seedDummyData']); // Route to create dummy data
