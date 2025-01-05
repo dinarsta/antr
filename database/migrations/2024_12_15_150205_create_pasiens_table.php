@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('pasiens', function (Blueprint $table) {
             $table->id();
-            $table->string('nomor_antrian')->unique();
+            $table->string('nomor_resep')->unique();
             $table->string('nama');
-            $table->enum('jenis_obat', ['jadi', 'racikan']);
-            $table->timestamp('waktu_pemanggilan')->nullable();
+            $table->enum('jenis_obat', ['jadi', 'racikan']); // Tetap
+            $table->timestamp('waktu_mulai')->nullable(); // Mengganti 'waktu_pemanggilan' menjadi 'waktu_mulai'
+            $table->timestamp('estimasi_waktu_selesai')->nullable(); // Tambahan estimasi waktu selesai
+            $table->string('keterangan')->nullable(); // Kolom untuk menyimpan keterangan tambahan
             $table->timestamps();
         });
     }
