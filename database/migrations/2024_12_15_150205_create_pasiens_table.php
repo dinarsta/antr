@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('nomor_resep')->unique();
             $table->string('nama');
-            $table->enum('jenis_obat', ['jadi', 'racikan']); // Tetap
-            $table->timestamp('waktu_mulai')->nullable(); // Mengganti 'waktu_pemanggilan' menjadi 'waktu_mulai'
-            $table->timestamp('estimasi_waktu_selesai')->nullable(); // Tambahan estimasi waktu selesai
+            $table->enum('jenis_obat', ['jadi', 'racikan']);
+            $table->datetime('waktu_mulai'); // Tidak nullable
+            $table->datetime('estimasi_waktu_selesai'); // Tidak nullable
             $table->enum('keterangan', ['menunggu', 'selesai'])->default('menunggu');
             $table->timestamps();
         });

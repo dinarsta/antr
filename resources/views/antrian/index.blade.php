@@ -60,11 +60,12 @@
         },
         body: JSON.stringify({
             status: status,
-            keterangan: 'selesai', // Pastikan keterangan diubah menjadi "selesai"
+            keterangan: 'selesai',
         })
     })
     .then(response => response.json())
     .then(data => {
+        console.log(data); // Tambahkan log untuk melihat response dari server
         if (data.success) {
             console.log(`Status pasien ID ${idPasien} berhasil diperbarui di database.`);
         } else {
@@ -78,55 +79,51 @@
 
 
         function updateEstimasi() {
-    const rows = document.querySelectorAll('#patientTableBody tr');
-    const currentTime = new Date();
+            const rows = document.querySelectorAll('#patientTableBody tr');
+            const currentTime = new Date();
+            let allDone = true;
 
-    rows.forEach(row => {
-        const startTimeStr = row.querySelector('.estimasi-waktu').getAttribute('data-start');
-        const jenisObat = row.querySelector('.estimasi-waktu').getAttribute('data-jenis');
-        const estimasiCell = row.querySelector('.estimasi-waktu');
-        const keteranganCell = row.querySelector('td:last-child'); // Kolom keterangan
-        const idPasien = row.querySelector('td:first-child').textContent;
+            rows.forEach(row => {
+                const startTimeStr = row.querySelector('.estimasi-waktu').getAttribute('data-start');
+                const jenisObat = row.querySelector('.estimasi-waktu').getAttribute('data-jenis');
+                const estimasiCell = row.querySelector('.estimasi-waktu');
+                const keteranganCell = row.querySelector('td:last-child');
+                const idPasien = row.querySelector('td:first-child').textContent;
 
-        if (!startTimeStr || !jenisObat) {
-            estimasiCell.textContent = "-";
-            return;
+                if (!startTimeStr || !jenisObat) {
+                    estimasiCell.textContent = "-";
+                    return;
+                }
+
+                const estimatedTime = calculateEstimatedEndTime(startTimeStr, jenisObat);
+                const remainingTime = estimatedTime - currentTime;
+
+                if (remainingTime > 0) {
+                    const minutes = String(Math.floor((remainingTime / (1000 * 60)) % 60)).padStart(2, '0');
+                    const seconds = String(Math.floor((remainingTime / 1000) % 60)).padStart(2, '0');
+                    estimasiCell.textContent = `00:${minutes}:${seconds}`;
+                    allDone = false;
+                } else {
+                    if (keteranganCell.textContent !== "selesai") {
+                        estimasiCell.textContent = "selesai";
+                        keteranganCell.textContent = "selesai";
+                        updateStatusToSelesai(idPasien, "selesai");
+                    }
+                }
+            });
+
+            if (allDone) {
+                clearInterval(intervalId);
+            }
         }
-
-        const estimatedTime = calculateEstimatedEndTime(startTimeStr, jenisObat);
-        const remainingTime = estimatedTime - currentTime;
-
-        if (remainingTime > 0) {
-            const hours = String(Math.floor(remainingTime / (1000 * 60 * 60))).padStart(2, '0');
-            const minutes = String(Math.floor((remainingTime / (1000 * 60)) % 60)).padStart(2, '0');
-            const seconds = String(Math.floor((remainingTime / 1000) % 60)).padStart(2, '0');
-            estimasiCell.textContent = `${hours}:${minutes}:${seconds}`;
-        } else {
-            estimasiCell.textContent = "selesai";
-
-            // Update keterangan di view
-            keteranganCell.textContent = "selesai";
-
-            // Update status ke database
-            updateStatusToSelesai(idPasien, "selesai");
-        }
-    });
-}
-
 
         function calculateEstimatedEndTime(startTimeStr, jenisObat) {
             const startTime = new Date(startTimeStr);
-            const duration = jenisObat.toLowerCase() === 'racikan' ? 60 : 30;
+            const duration = 2; // Durasi tetap 2 menit untuk semua jenis obat
             return startTime.setMinutes(startTime.getMinutes() + duration);
         }
 
-        function speakText(text) {
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'id-ID';
-            window.speechSynthesis.speak(utterance);
-        }
-
-        setInterval(updateEstimasi, 1000);
+        const intervalId = setInterval(updateEstimasi, 1000);
     </script>
 </body>
 </html>
