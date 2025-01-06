@@ -18,3 +18,8 @@ Route::post('/update-status/{id}', [AntrianController::class, 'updateStatusById'
 
 
 Route::post('/update-status/{id}', [AntrianController::class, 'updateStatus']);
+Route::post('/update-status/{id}', [AntrianController::class, 'updateStatus'])->name('update.status');
+Route::get('/periksa-status-pasien', [AntrianController::class, 'periksaStatusPasien']);
+
+Route::post('/update-status/{id}', [AntrianController::class, 'updateStatus']);
+Route::get('/check-patient-status', [AntrianController::class, 'periksaStatusPasien']);
