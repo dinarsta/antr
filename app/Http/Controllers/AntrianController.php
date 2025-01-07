@@ -61,18 +61,35 @@ class AntrianController extends Controller
         $pasiens = Pasien::where('keterangan', 'menunggu')->get();
 
         foreach ($pasiens as $pasien) {
-            if ($pasien->estimasi_waktu_selesai && Carbon::now()->greaterThanOrEqualTo($pasien->estimasi_waktu_selesai)) {
+            $startTime = Carbon::parse($pasien->waktu_mulai);
+            $estimatedEndTime = $this->calculateEstimatedEndTime($startTime, $pasien->jenis_obat);
+
+            if (Carbon::now()->greaterThanOrEqualTo($estimatedEndTime)) {
                 $pasien->keterangan = 'selesai';
+                $pasien->estimasi_waktu_selesai = $estimatedEndTime;
                 $pasien->save();
 
                 if ($pasien->wasChanged('keterangan')) {
-                    \Log::info("Keterangan pasien ID {$pasien->id} berhasil diperbarui menjadi 'selesai'.");
+                    \Log::info("Pasien ID {$pasien->id} selesai pada {$estimatedEndTime}.");
                 } else {
-                    \Log::error("Keterangan pasien ID {$pasien->id} gagal diperbarui.");
+                    \Log::error("Gagal memperbarui pasien ID {$pasien->id}.");
                 }
             }
         }
 
         return response()->json(['message' => 'Status pasien diperiksa dan diperbarui.']);
     }
+
+
+    public function updateEstimasi(Request $request, $id)
+    {
+        $pasien = Pasien::findOrFail($id);
+        $pasien->update(['estimasi' => $request->estimasi]);
+
+        return response()->json([
+            'message' => 'Estimasi berhasil diperbarui',
+            'data' => $pasien,
+        ]);
+    }
 }
+

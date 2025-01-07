@@ -10,11 +10,12 @@ class Pasien extends Model
     use HasFactory;
 
     protected $fillable = [
-        'nama',
         'nomor_resep',
+        'nama',
         'jenis_obat',
         'waktu_mulai',
         'estimasi_waktu_selesai',
+        'estimasi',
         'keterangan',
     ];
 

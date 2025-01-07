@@ -12,3 +12,5 @@ Route::post('/update-status/{id}', [AntrianController::class, 'updateStatus'])->
 Route::get('/periksa-status', [AntrianController::class, 'periksaStatusPasien'])->name('periksa.status');
 
 Route::post('/update-status/{id}', [AntrianController::class, 'updateStatus']);
+
+Route::post('/update-estimasi/{id}', [AntrianController::class, 'updateEstimasi']);

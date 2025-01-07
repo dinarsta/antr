@@ -28,6 +28,14 @@ class PasienSeeder extends Seeder
                 ? $startTime->copy()->addMinutes(60) // Add 60 minutes for "racikan"
                 : $startTime->copy()->addMinutes(30); // Add 30 minutes for "jadi"
 
+            // Format estimated time for `estimasi`
+            $currentTime = Carbon::now();
+            $remainingTime = $estimatedEndTime->diffInSeconds($currentTime, false); // Calculate remaining time
+
+            $estimasi = $remainingTime > 0
+                ? gmdate('H:i:s', $remainingTime) // Convert seconds to H:i:s format
+                : '00:00:00'; // If time has passed
+
             // Insert the data into the database
             Pasien::create([
                 'nomor_resep' => $item['nomor_resep'],
@@ -35,6 +43,7 @@ class PasienSeeder extends Seeder
                 'jenis_obat' => $item['jenis_obat'],
                 'waktu_mulai' => $item['waktu_mulai'],
                 'estimasi_waktu_selesai' => $estimatedEndTime,
+                'estimasi' => $estimasi,
                 'keterangan' => $item['keterangan'],
             ]);
         }

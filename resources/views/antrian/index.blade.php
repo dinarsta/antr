@@ -86,6 +86,16 @@
                     const minutes = String(Math.floor((remainingTime / (1000 * 60)) % 60)).padStart(2, '0');
                     const seconds = String(Math.floor((remainingTime / 1000) % 60)).padStart(2, '0');
                     estimasiCell.textContent = `00:${minutes}:${seconds}`;
+
+                    // Kirim estimasi ke server
+                    fetch(`/update-estimasi/${idPasien}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({ estimasi: `${minutes}:${seconds}` })
+                    }).catch(error => console.error('Error:', error));
                 } else {
                     if (keteranganCell.textContent !== "selesai") {
                         estimasiCell.textContent = "selesai";
@@ -104,5 +114,6 @@
 
         setInterval(updateEstimasi, 1000);
     </script>
+
 </body>
 </html>

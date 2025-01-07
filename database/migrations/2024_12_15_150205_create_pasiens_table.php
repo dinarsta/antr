@@ -15,6 +15,7 @@ class CreatePasiensTable extends Migration
             $table->enum('jenis_obat', ['jadi', 'racikan']);
             $table->datetime('waktu_mulai');
             $table->datetime('estimasi_waktu_selesai');
+            $table->string('estimasi');
             $table->enum('keterangan', ['menunggu', 'selesai'])->default('menunggu');
             $table->timestamps();
         });
