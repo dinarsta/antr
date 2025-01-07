@@ -26,69 +26,45 @@ class AntrianController extends Controller
     }
 
     /**
-     * Mengupdate status pasien.
+     * Mengupdate status pasien berdasarkan ID.
      */
+    public function updateStatus($id, Request $request)
+    {
+        \Log::info("Memperbarui status pasien ID: $id");
+        $pasien = Pasien::find($id);
 
-     public function updateStatus($id)
-{
-    // Cari data berdasarkan ID
-    $order = Order::find($id); // Ganti 'Order' dengan nama model Anda
+        if ($pasien) {
+            $pasien->keterangan = $request->input('keterangan', 'selesai');
+            $pasien->save();
 
-    if ($order) {
-        $order->keterangan = 'selesai'; // Update kolom 'keterangan'
-        $order->save(); // Simpan perubahan
+            return response()->json(['success' => true, 'message' => 'Status berhasil diperbarui.']);
+        }
 
-        return response()->json([
-            'message' => 'Status berhasil diperbarui menjadi selesai.'
-        ]);
+        \Log::error("Pasien dengan ID $id tidak ditemukan.");
+        return response()->json(['success' => false, 'message' => 'Pasien tidak ditemukan.'], 404);
     }
 
-    return response()->json([
-        'message' => 'Data tidak ditemukan.'
-    ], 404);
-}
-
     /**
-     * Memeriksa status pasien dan memperbarui keterangan.
+     * Memeriksa status pasien dan memperbarui jika waktu selesai telah terlampaui.
      */
+    public function periksaStatusPasien()
+    {
+        \Log::info("Memulai pengecekan status pasien...");
+        $pasiens = Pasien::where('keterangan', 'menunggu')->get();
 
-     public function periksaStatusPasien()
-     {
-         \Log::info("Memulai pengecekan status pasien...");
+        foreach ($pasiens as $pasien) {
+            if ($pasien->estimasi_waktu_selesai && Carbon::now()->greaterThanOrEqualTo($pasien->estimasi_waktu_selesai)) {
+                $pasien->keterangan = 'selesai';
+                $pasien->save();
 
-         // Ambil semua pasien dengan keterangan 'menunggu'
-         $pasiens = Pasien::where('keterangan', 'menunggu')->get();
+                if ($pasien->wasChanged('keterangan')) {
+                    \Log::info("Keterangan pasien ID {$pasien->id} berhasil diperbarui menjadi 'selesai'.");
+                } else {
+                    \Log::error("Keterangan pasien ID {$pasien->id} gagal diperbarui.");
+                }
+            }
+        }
 
-         foreach ($pasiens as $pasien) {
-             \Log::info("Memeriksa pasien ID {$pasien->id}, Estimasi Waktu Selesai: {$pasien->estimasi_waktu_selesai}");
-
-             // Periksa apakah estimasi waktu selesai sudah terlewati
-             if ($pasien->estimasi_waktu_selesai && Carbon::now()->greaterThanOrEqualTo($pasien->estimasi_waktu_selesai)) {
-                 $pasien->keterangan = 'selesai';
-                 $pasien->save();
-
-                 if ($pasien->wasChanged('keterangan')) {
-                     \Log::info("Keterangan pasien ID {$pasien->id} berhasil diperbarui menjadi 'selesai'.");
-                 } else {
-                     \Log::error("Keterangan pasien ID {$pasien->id} gagal diperbarui.");
-                 }
-             }
-         }
-
-         return response()->json(['message' => 'Status pasien diperiksa dan diperbarui.']);
-     }
-
-    public function store(Request $request)
-{
-    $request->validate([
-        'nomor_resep' => 'required|unique:pasiens',
-        'nama' => 'required',
-        'jenis_obat' => 'required|in:jadi,racikan',
-        'waktu_mulai' => 'required|date',
-        'estimasi_waktu_selesai' => 'required|date|after:waktu_mulai',
-    ]);
-
-    Pasien::create($request->all());
-}
-
+        return response()->json(['message' => 'Status pasien diperiksa dan diperbarui.']);
+    }
 }

@@ -49,39 +49,23 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        let hasSpoken = {};
-
-        function updateStatusToSelesai(idPasien, status) {
-    fetch(`/update-status/${idPasien}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-        },
-        body: JSON.stringify({
-            status: status,
-            keterangan: 'selesai',
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log(data); // Tambahkan log untuk melihat response dari server
-        if (data.success) {
-            console.log(`Status pasien ID ${idPasien} berhasil diperbarui di database.`);
-        } else {
-            console.error(`Gagal memperbarui status pasien ID ${idPasien} di database.`);
+        function updateStatusToSelesai(idPasien) {
+            fetch(`/update-status/${idPasien}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ keterangan: 'selesai' })
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
         }
-    })
-    .catch(error => {
-        console.error(`Terjadi kesalahan saat memperbarui status pasien ID ${idPasien}:`, error);
-    });
-}
-
 
         function updateEstimasi() {
             const rows = document.querySelectorAll('#patientTableBody tr');
             const currentTime = new Date();
-            let allDone = true;
 
             rows.forEach(row => {
                 const startTimeStr = row.querySelector('.estimasi-waktu').getAttribute('data-start');
@@ -102,28 +86,23 @@
                     const minutes = String(Math.floor((remainingTime / (1000 * 60)) % 60)).padStart(2, '0');
                     const seconds = String(Math.floor((remainingTime / 1000) % 60)).padStart(2, '0');
                     estimasiCell.textContent = `00:${minutes}:${seconds}`;
-                    allDone = false;
                 } else {
                     if (keteranganCell.textContent !== "selesai") {
                         estimasiCell.textContent = "selesai";
                         keteranganCell.textContent = "selesai";
-                        updateStatusToSelesai(idPasien, "selesai");
+                        updateStatusToSelesai(idPasien);
                     }
                 }
             });
-
-            if (allDone) {
-                clearInterval(intervalId);
-            }
         }
 
         function calculateEstimatedEndTime(startTimeStr, jenisObat) {
             const startTime = new Date(startTimeStr);
-            const duration = 2; // Durasi tetap 2 menit untuk semua jenis obat
+            const duration = jenisObat === "racikan" ? 60 : 30;
             return startTime.setMinutes(startTime.getMinutes() + duration);
         }
 
-        const intervalId = setInterval(updateEstimasi, 1000);
+        setInterval(updateEstimasi, 1000);
     </script>
 </body>
 </html>
