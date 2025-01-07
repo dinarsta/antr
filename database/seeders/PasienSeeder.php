@@ -16,9 +16,7 @@ class PasienSeeder extends Seeder
         $data = [
             ['nomor_resep' => 'A001', 'nama' => 'Budi Santoso', 'jenis_obat' => 'jadi', 'waktu_mulai' => Carbon::now()->subMinutes(10), 'keterangan' => 'menunggu'],
             ['nomor_resep' => 'A002', 'nama' => 'Siti Aisyah', 'jenis_obat' => 'racikan', 'waktu_mulai' => Carbon::now()->subMinutes(20), 'keterangan' => 'menunggu'],
-            ['nomor_resep' => 'A003', 'nama' => 'Andi Wijaya', 'jenis_obat' => 'jadi', 'waktu_mulai' => Carbon::now()->subMinutes(30), 'keterangan' => 'menunggu'],
-            ['nomor_resep' => 'A004', 'nama' => 'Rina Kartika', 'jenis_obat' => 'racikan', 'waktu_mulai' => Carbon::now()->subMinutes(40), 'keterangan' => 'menunggu'],
-            ['nomor_resep' => 'A005', 'nama' => 'Dedi Supriyadi', 'jenis_obat' => 'jadi', 'waktu_mulai' => Carbon::now()->subMinutes(50), 'keterangan' => 'menunggu'],
+
         ];
 
         foreach ($data as $item) {
