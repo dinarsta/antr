@@ -17,9 +17,8 @@ class AntrianController extends Controller
         foreach ($pasien as $data) {
             if ($data->waktu_mulai) {
                 $startTime = Carbon::parse($data->waktu_mulai);
-                $data->estimasi_waktu_selesai = $data->jenis_obat === 'racikan'
-                    ? $startTime->addMinutes(60)
-                    : $startTime->addMinutes(30);
+                // Add 60 minutes for 'racikan' and 30 minutes for 'jadi'
+                $data->estimasi_waktu_selesai = $this->calculateEstimatedEndTime($startTime, $data->jenis_obat);
             }
         }
         return view('antrian.index', compact('pasien'));
@@ -42,6 +41,15 @@ class AntrianController extends Controller
 
         \Log::error("Pasien dengan ID $id tidak ditemukan.");
         return response()->json(['success' => false, 'message' => 'Pasien tidak ditemukan.'], 404);
+    }
+
+    /**
+     * Menghitung estimasi waktu selesai berdasarkan jenis obat.
+     */
+    private function calculateEstimatedEndTime(Carbon $startTime, string $jenisObat): Carbon
+    {
+        $duration = ($jenisObat === 'racikan') ? 60 : 30;
+        return $startTime->addMinutes($duration);
     }
 
     /**
